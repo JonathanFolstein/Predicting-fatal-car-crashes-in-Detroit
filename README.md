@@ -14,4 +14,5 @@ joblib<br>
 <br>
 I used Python version 3.7<br>
 <br>
+For detailed requirements see requirements.txt<br>
 I welcome any comments people are generous enough to provide.
