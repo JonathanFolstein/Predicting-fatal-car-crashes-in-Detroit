@@ -877,7 +877,6 @@ dumpandloadclf('dump', lreg1_avpr, 'lreg1_avpr')
 # <font size=4>The first two rows of the summary below report the best parameters - in this case the parameters that resulted in the best average precision. The best reported parameters were C = 10 and 'l2' regularization - although it looks like C 10 through 1000 were all the same to three significant digits and the penalties were also the same within that range (columns under "Grid scores...). (Note that the first of the two tables shows the scores for the validation set. I also plotted the training set grid scores under that to help assess bias and variance). Notice also that, at the default threshold of .5, the model didn't do well be any measure other than accuracy, as shown on the last table (Last table, called "Detailed classification report", second row, starting with "1", meaning metrics for targets). Precision: .46, recall: .03, f1: .05. That might not be surprising, given how intermixed the targets (fatalities) were with non-targets, but, as we will see, other models actually did much better.
 
 summarize_gridsearch('lreg1_avpr', X_test, y_test)
-
 # <font size=4>Our goal was to get recall up as high as possible while maintaining high accuracy by adjusting the threshold. The plot below shows the precision, recall, accuracy, and F1 plotted against probability thresholds between .002 and .01 - see the table after the two figures for the actual numbers. As one might expect, recall continued to improve with lower thresholds. Accuracy remained pretty high up to .006, but started to drop more sharply after that. The model achieved a recall of .74 while maintaining an accuracy of 90% - better than I explected actually. So, it was able to detect 74% of the targets while still rejecting the vast majority of the non-targets. Just what we would want in that kind of warning system.
 
 # +
@@ -993,10 +992,13 @@ print('total hours: ', elapsed / 60 / 60)
 
 summarize_gridsearch('gbc_avpr', X_test, y_test)
 summarize_threshold_scores('gbc_avpr', scoredict, thresh, X_train, y_train, X_test, y_test)
-
 # <br>
 # <br>
 # <font size="4">The bar plot and precision-recall curves show that while the model was similar to the previous models on some metrics, the auc was a bit better. Also, it achieved a recall of 80% at 90% accuracy, an improvement over both models. Again, this is reflected in high-recall portion of the precision-recall curve (green line, leftmost part of the figure). 
+
+# <br>
+# <br>
+# <font size="4">Interestingly, the initial model is worse than the SVM on precision and recall at threshold .5 (blue and orange bars), but already out-performs it on the metrics we care about: area under the precision recall curve and recall at the threshold that gives 90% accuracy.
 
 # note: this function sometimes gives a "RuntimeWarning: invalid value encountered in true_divide"
 # I couldn't quite figure out the source of this error, but all the values look right, so I let it alone
@@ -1037,12 +1039,13 @@ elapsed = time.time() - t
 print('total hours: ', elapsed / 60 / 60)
 # -
 
+# <font size="4">The best max_depth, 14, was in the search range, but the best min_samples_split was at the highest value, 2000. On the full test set, the best parameters improved both precision and area under the precision-recall curve over earlier versions of the model (gbc_avpr2), as one would expect if the grid search was actually identifying better parameters. Results are shown in the next bar graph. 
+#     
+#
+
 summarize_gridsearch('gbc_avpr2', X_test, y_test)
 summarize_threshold_scores('gbc_avpr2', scoredict, thresh, X_train, y_train, X_test, y_test)
 
-# <font size="4">The best max_depth, 14, was in the search range, but the best min_samples_split was at the highest value, 2000. On the full test set, the best parameters improved both precision and area under the precision-recall curve over earlier versions of the model (gbc_avpr2), as one would expect if the grid search was actually identifying better parameters. Results are shown in the next bar graph. 
-#     
-# <font size="4">Because min_samples_split was at the top edge of the search range, I did a second iteration, holding max_depth at 14. 
 
 # +
 plot_recall_subpl(X_test, y_test, 'lreg1_avpr', 'svmrbf_avpr', 'gbc_avpr', 'gbc_avpr2')
@@ -1051,7 +1054,7 @@ plotrocs(X_test, y_test, 0, "lreg1_avpr", "svmrbf_avpr",
                "gbc_avpr", "gbc_avpr2")
 
 # -
-# <font size="4">The grid search below identified 2500 as the best value for min_samples_split. It was within the search range, allowing us to move on. The search range was fairly large, so it might have been possible to find an even better value.
+# <font size="4">Because min_samples_split was at the top edge of the search range, I did a second iteration, holding max_depth at 14. The grid search below identified 2500 as the best value for min_samples_split. It was within the search range, allowing us to move on. The search range was fairly large, so it might have been possible to find an even better value.
 
 # +
 t = time.time()
