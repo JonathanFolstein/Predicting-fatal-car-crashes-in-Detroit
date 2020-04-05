@@ -189,3 +189,5 @@ tmp/
 Drafts/
 .idea/
 junk*
+*.jpeg
+*.png
