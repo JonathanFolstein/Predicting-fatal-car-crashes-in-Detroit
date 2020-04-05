@@ -186,6 +186,7 @@ MarkdownFile/
 OldModels/
 pickles/
 tmp/
+tmp/*
 Drafts/
 .idea/
 junk*
